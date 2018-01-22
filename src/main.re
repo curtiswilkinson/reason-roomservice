@@ -1,5 +1,5 @@
 let options = Args.parse(Sys.argv);
 
-Config.get("./mock/roomservice.config.yml");
+let config = Config.get(options.project);
 
 Js.log(options);

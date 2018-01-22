@@ -14,5 +14,9 @@
   "devDependencies": {
     "bs-node": "buckletypes/bs-node",
     "bs-platform": "^2.1.0"
+  },
+  "dependencies": {
+    "js-yaml": "^3.10.0",
+    "toml": "^2.3.3"
   }
 }
