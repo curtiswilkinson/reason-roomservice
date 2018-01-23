@@ -17,11 +17,11 @@ module Options = {
   };
 };
 
-let rec find_argument_index = (args, argument, index) =>
-  if (args[index] == argument) {
-    index;
+let rec find_next_argument_index = (args, argument, index) =>
+  if (args[index] === argument) {
+    index + 1;
   } else {
-    find_argument_index(args, argument, index + 1);
+    find_next_argument_index(args, argument, index + 1);
   };
 
 let consume = (args, opts, argument) =>
@@ -31,15 +31,17 @@ let consume = (args, opts, argument) =>
     | "--no-cache" => {...opts, cache: false}
     | "--cache-all" => {...opts, cache: false}
     | "--project" =>
-      let projectPathIndex = find_argument_index(args, "--project", 0);
-      {...opts, project: args[projectPathIndex + 1]};
+      let projectPathIndex = find_next_argument_index(args, "--project", 0);
+      {...opts, project: args[projectPathIndex]};
     | "--build" =>
-      let buildIndex = find_argument_index(args, "--build", 0);
-      let argsAfterIndex = Array.sub(args, buildIndex, Array.length(args));
+      let buildIndex = find_next_argument_index(args, "--build", 0);
+      let argsAfterIndex =
+        Array.sub(args, buildIndex, Array.length(args) - buildIndex);
       {...opts, build: Array.to_list(argsAfterIndex)};
     | "--ignore" =>
-      let ignoreIndex = find_argument_index(args, "--build", 0);
-      let argsAfterIndex = Array.sub(args, ignoreIndex, Array.length(args));
+      let ignoreIndex = find_next_argument_index(args, "--ignore", 0);
+      let argsAfterIndex =
+        Array.sub(args, ignoreIndex, Array.length(args) - ignoreIndex);
       {...opts, build: Array.to_list(argsAfterIndex)};
     | _ => opts
     }

@@ -1,1 +1,4 @@
-test: "yml"
+rooms:
+    front_end:
+      path: ./front_end
+      before: yarn

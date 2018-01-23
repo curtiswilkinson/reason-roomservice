@@ -3,15 +3,19 @@ type hook =
   | Batch(option(list(string)));
 
 type room = {
-  path: option(string),
-  before: hook,
-  runParallel: hook,
-  runSynchronous: hook,
-  after: hook,
-  finally: hook
+  .
+  "name": string,
+  "path": string,
+  "before": hook,
+  "runParallel": hook,
+  "runSynchronous": hook,
+  "after": hook,
+  "finally": hook,
+  "cached": bool,
+  "shouldBuild": bool
 };
 
-type config = {rooms: list(room)};
+type config = {. "rooms": list(room)};
 
 let is_file: string => bool = [%raw
   {|
@@ -21,7 +25,7 @@ let is_file: string => bool = [%raw
 |}
 ];
 
-let parse_json: string => config = [%raw
+let parse_json: string => 'a = [%raw
   {|
     function(content) {
       return JSON.parse(content)
@@ -29,9 +33,32 @@ let parse_json: string => config = [%raw
   |}
 ];
 
-[@bs.module "js-yaml"] external parse_yaml : string => config = "load";
+/* the greatest lie */
+let extend_config: config => config = [%raw
+  {|
+    function(rawConfig) {
+      var rooms = Object.keys(rawConfig.rooms).reduce((acc, current) => {
+        var room = rawConfig.rooms[current]
+        room.name = current
+        room.cached = false
+        room.shouldBuild = true
+        acc.push(room)
+        return acc
+      }, [])
+      return { rooms }
+    }
+  |}
+];
 
-[@bs.module "toml"] external parse_toml : string => config = "parse";
+[@bs.module "js-yaml"] external parse_yaml : string => 'a = "load";
+
+[@bs.module "toml"] external parse_toml : string => 'a = "parse";
+
+let normalise_config_paths = (rootPath, config) => {
+  let resolve_room_path = room =>
+    Js.Obj.assign(room, {"path": Node.Path.join2(rootPath, room##path)});
+  Js.Obj.assign(config, {"rooms": List.map(resolve_room_path, config##rooms)});
+};
 
 let rec first_matching_config = files =>
   switch files {
@@ -72,7 +99,6 @@ let get = projectPath => {
       |> Path.join2(projectPath);
     };
   let contents = Fs.readFileAsUtf8Sync(path);
-  let config = parse(path, contents);
-  Js.log(config);
-  config;
+  let rootPath = isFile ? Path.dirname(projectPath) : projectPath;
+  parse(path, contents) |> extend_config |> normalise_config_paths(rootPath);
 };
