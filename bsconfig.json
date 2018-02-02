@@ -1,13 +1,20 @@
 {
   "name": "prototype-roomservice",
   "version": "0.1.0",
-  "sources": ["src"],
+  "sources": [
+    "src",
+    {
+      "dir": "__tests__",
+      "type": "dev"
+    }
+  ],
   "package-specs": {
     "module": "commonjs",
     "in-source": true
   },
   "suffix": ".bs.js",
   "bs-dependencies": ["bs-node"],
+  "bs-dev-dependencies": ["@glennsl/bs-jest"],
   "namespace": true,
   "refmt": 3
 }

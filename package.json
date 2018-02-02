@@ -4,18 +4,19 @@
   "scripts": {
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
-    "clean": "bsb -clean-world"
+    "clean": "bsb -clean-world",
+    "test": "npm run build && jest --coverage"
   },
-  "keywords": [
-    "BuckleScript"
-  ],
+  "keywords": ["BuckleScript"],
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "bs-node": "buckletypes/bs-node",
-    "bs-platform": "^2.1.0"
+    "bs-platform": "^2.1.0",
+    "jest": "^22.1.4"
   },
   "dependencies": {
+    "@glennsl/bs-jest": "^0.4.0",
     "js-yaml": "^3.10.0",
     "md5": "^2.2.1",
     "toml": "^2.3.3"
