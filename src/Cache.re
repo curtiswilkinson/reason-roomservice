@@ -23,5 +23,5 @@ let process_room: Config.room => Config.room =
     };
   };
 
-let parse: Config.config => Config.config =
-  conf => Js.Obj.assign(conf, {"rooms": List.map(process_room, conf##rooms)});
+let parse: Config.t => Config.t =
+  conf => Js.Obj.assign(conf, {"rooms": Array.map(process_room, conf##rooms)});

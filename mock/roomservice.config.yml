@@ -2,3 +2,9 @@ rooms:
     front_end:
       path: ./front_end
       before: yarn
+    api:
+      path: ./api
+      after: yarn buil
+    media_server:
+      path: ./media_server/
+      runParallel: yarn

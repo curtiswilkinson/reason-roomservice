@@ -42,7 +42,8 @@ let consume = (args, opts, argument) =>
       let ignoreIndex = find_next_argument_index(args, "--ignore", 0);
       let argsAfterIndex =
         Array.sub(args, ignoreIndex, Array.length(args) - ignoreIndex);
-      {...opts, build: Array.to_list(argsAfterIndex)};
+      Js.log(argsAfterIndex);
+      {...opts, ignore: Array.to_list(argsAfterIndex)};
     | _ => opts
     }
   );

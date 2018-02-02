@@ -15,7 +15,7 @@ type room = {
   "shouldBuild": bool
 };
 
-type config = {. "rooms": list(room)};
+type t = {. "rooms": array(room)};
 
 let is_file: string => bool = [%raw
   {|
@@ -34,7 +34,7 @@ let parse_json: string => 'a = [%raw
 ];
 
 /* the greatest lie */
-let extend_config: config => config = [%raw
+let extend_config: t => t = [%raw
   {|
     function(rawConfig) {
       var rooms = Object.keys(rawConfig.rooms).reduce((acc, current) => {
@@ -55,9 +55,13 @@ let extend_config: config => config = [%raw
 [@bs.module "toml"] external parse_toml : string => 'a = "parse";
 
 let normalise_config_paths = (rootPath, config) => {
+  Js.log(config##rooms);
   let resolve_room_path = room =>
     Js.Obj.assign(room, {"path": Node.Path.join2(rootPath, room##path)});
-  Js.Obj.assign(config, {"rooms": List.map(resolve_room_path, config##rooms)});
+  Js.Obj.assign(
+    config,
+    {"rooms": Array.map(resolve_room_path, config##rooms)}
+  );
 };
 
 let rec first_matching_config = files =>
